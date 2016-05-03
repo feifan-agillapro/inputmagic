@@ -1,0 +1,51 @@
+<html>
+	<head>
+		<link rel="stylesheet" type="text/css" href="inputmagic.css">
+		<link rel="stylesheet" type="text/css" href="style.css">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+		<script src="inputmagic.js"></script>
+		<script>
+			$(function(){
+				//Basic Select
+				$('.im-select').magic();
+
+				//Multi-Column Select
+				$('.im-select-multicolumn').magic({
+					columns: ["price"],
+				});
+
+				//Tag-Style Multi Select
+				$('.im-multiselect-tags').magic({
+					type:'tags',
+				});
+			});
+		</script>
+	</head>
+	<body>
+		<div class="container">
+			<h4>Regular Select</h4>
+			<select class="im-select">
+				<option value="">Select a Make</option>
+				<option value="BMW">BMW</option>
+				<option value="Ford">Ford</option>
+				<option value="Lotus">Lotus</option>
+			</select>
+			<h4>Multi-Column Select</h4>
+			<select class="im-select-multicolumn" style="width:150px;">
+				<option value="">Select a Size</option>
+				<option value="Small" data-price="$4.99">Small</option>
+				<option value="Medium" data-price="$9.99">Medium</option>
+				<option value="Large" data-price="$14.99">Large</option>
+			</select>
+			<h4>Tag-Style Mutli-Select</h4>
+			<select class="im-multiselect-tags" multiple style="width:200px;">
+				<option value="">Select a Make</option>
+				<option value="BMW">BMW</option>
+				<option value="Ford">Ford</option>
+				<option value="Lotus">Lotus</option>
+			</select>
+			<h4>Regular Text</h4>
+			<input type="text" class="im-text im-input" />
+		</div>
+	</body>
+</html>

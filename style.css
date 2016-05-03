@@ -1,0 +1,13 @@
+body {
+	background-color:#DAD3CE;
+	font-family:"Sans Serif";
+}
+
+.container {
+	margin-left:auto;
+	margin-right:auto;
+	background-color:white;
+	position:relative;
+	padding:10px;
+	width:900px;
+}

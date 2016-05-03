@@ -1,0 +1,99 @@
+.im-input {
+	font-family:Arial, Helvetica, sans-serif;
+	position:inline-block;
+	border-radius:3px;
+	height:25px;
+	line-height:25px;
+	box-shadow: inset 0px 1px 2px 0px rgba(0,0,0,0.25);
+ 	border:1px solid #bbb;
+}
+
+input.im-input {
+	height:27px;
+}
+
+div.im-tagmultiselect-inner {
+	padding-left:3px;
+}
+
+div.im-tagmultiselect-sizer {
+	z-index:-1;
+	position:absolute;
+	display:none;
+}
+
+input.im-tagmultiselect-input {
+	width:10px;
+}
+
+.im-input:focus {
+	outline-width: 0;
+}
+
+div.im-select-container {
+	font-size:13px;
+	position:relative;
+	background-color:white;
+	-moz-user-select: -moz-none;
+	-khtml-user-select: none;
+	-webkit-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+div.im-tagmultiselect-container {
+	font-size:13px;
+	position:relative;
+	background-color:white;
+}
+
+input.im-tagmultiselect-input {
+	margin-top:4px;
+	outline-width: 0;
+	border:none;
+}
+
+div.im-tagmultiselect-container:hover {
+	cursor:text;
+}
+
+div.im-select-container:hover {
+	cursor:default;
+}
+
+span.im-select-selection {
+	display:inline-block;
+ 	padding-left:3px;
+}
+
+span.im-select-caret {
+	float:right;
+	font-size:13px;
+	margin-right:5px;
+}
+
+div.im-select-options {
+	left:-1px;
+	position:absolute;
+	background-color:white;
+ 	border:1px solid #bbb;
+}
+
+div.im-select-options div.selected {
+	background-color:#B5D2EF;
+}
+
+div.im-select-option {
+	padding-left:3px;
+	width:'100%';
+	border-radius:3px;
+	height:'16px';
+}
+
+div.im-select-option span {
+	display:inline-block;
+}
+
+div.im-select-option:hover {
+	background-color:#DEF;
+}
