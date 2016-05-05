@@ -12,8 +12,30 @@ input.im-input {
 	height:27px;
 }
 
-div.im-tagmultiselect-inner {
-	padding-left:3px;
+div.im-tagmultiselect-selection {
+	display:none;
+}
+
+div.im-tagmultiselect-tag {
+	position:relative;
+	display:inline-block;
+	margin-left:3px;
+}
+
+span.im-tagmultiselect-tagclose {
+	margin-left:3px;
+}
+
+span.im-tagmultiselect-tagclose:hover{
+	cursor:pointer;
+}
+
+div.im-input {
+	-moz-user-select: -moz-none;
+	-khtml-user-select: none;
+	-webkit-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
 }
 
 div.im-tagmultiselect-sizer {
@@ -24,6 +46,7 @@ div.im-tagmultiselect-sizer {
 
 input.im-tagmultiselect-input {
 	width:10px;
+	margin-left:3px;
 }
 
 .im-input:focus {
@@ -34,11 +57,6 @@ div.im-select-container {
 	font-size:13px;
 	position:relative;
 	background-color:white;
-	-moz-user-select: -moz-none;
-	-khtml-user-select: none;
-	-webkit-user-select: none;
-	-ms-user-select: none;
-	user-select: none;
 }
 
 div.im-tagmultiselect-container {

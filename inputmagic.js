@@ -3,6 +3,7 @@
 IMTagMultiSelect = function( element, settings ) {
 	this.selected = [];
 	this.settings = settings;
+	this.selection = $('<div>', {class:'im-tagmultiselect-selection'});
 	this.sizer = $('<div>', {class:'im-tagmultiselect-sizer'});
 	this.input = $('<input>', {class:'im-tagmultiselect-input'})
 		.keyup($.proxy(this.resizeInput, this))
@@ -12,7 +13,7 @@ IMTagMultiSelect = function( element, settings ) {
 		.css({width:element.width()})
 		.click($.proxy(this.focus, this))
 		.append(this.sizer)
-		.append($('<div>', {class:'im-tagmultiselect-inner'}).append(this.input));
+		.append($('<div>', {class:'im-tagmultiselect-inner'}).append(this.selection).append(this.input));
 	// element.hide();
 	element.change($.proxy(this.update, this))
 		.after(this.container);
@@ -41,9 +42,42 @@ IMTagMultiSelect.prototype.resizeInput = function() {
 
 IMTagMultiSelect.prototype.update = function() {
 	var magic = this;
+	magic.selection.html('');
+	if (magic.anchor.find(':selected').length) {
+		magic.selection.css({display:'inline-block'});
+	} else {
+		magic.selection.css({display:'none'});
+	}
+
 	magic.anchor.find(':selected').each(function(){
-		
+		if (magic.selected.indexOf(this) === -1) {
+			magic.selected.push(this);
+		}
 	});
+
+	for (var x = 0; x < magic.selected.length; x++) {
+		if (magic.anchor.find(':selected').toArray().indexOf(magic.selected[x]) === -1) {
+			magic.selected.splice(x, 1);
+			continue;
+		}
+	}
+
+	for (var x = 0; x < magic.selected.length; x++) {
+		var option = $(this.selected[x]);
+		var tag = $('<div>', {class:'im-tagmultiselect-tag'});
+		var text = $('<span>', {class:'im-tagmultiselect-tagtext'})
+			.html(option.val());
+		var closeButton = $('<span>', {class:'im-tagmultiselect-tagclose'})
+			.html('\u24E7')
+			.data('anchor', option);
+		closeButton.click(function(){
+			$(this).data('anchor').removeProp('selected');
+			magic.anchor.change();
+		});
+		tag.append(text)
+			.append(closeButton);
+		magic.selection.append(tag);
+	}
 };
 
 IMSelect = function( element, settings ) {
