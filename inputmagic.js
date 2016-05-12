@@ -7,11 +7,13 @@ IMTagMultiSelect = function( element, settings ) {
 	this.sizer = $('<div>', {class:'im-tagmultiselect-sizer'});
 	this.input = $('<input>', {class:'im-tagmultiselect-input'})
 		.keyup($.proxy(this.resizeInput, this))
-		.keydown($.proxy(this.resizeInput, this));
+		.keydown($.proxy(this.keyupHandler, this))
+		.focusin($.proxy(this.grabFocus, this))
+		.focusout($.proxy(this.dropFocus, this));
 	this.container = $('<div>', {class:'im-input im-tagmultiselect-container'})
 		.data('magic', this)
 		.css({width:element.width()})
-		.click($.proxy(this.focus, this))
+		.click($.proxy(this.grabFocus, this))
 		.append(this.sizer)
 		.append($('<div>', {class:'im-tagmultiselect-inner'}).append(this.selection).append(this.input));
 	// element.hide();
@@ -21,9 +23,18 @@ IMTagMultiSelect = function( element, settings ) {
 	this.update();
 };
 
-IMTagMultiSelect.prototype.focus = function() {
-	this.container.find('input').focus();
-}
+IMTagMultiSelect.prototype.grabFocus = function(event) {
+	this.container.addClass('focused');
+	if (event.type != "focusin") this.container.find('input').focus();
+};
+
+IMTagMultiSelect.prototype.dropFocus = function(event) {
+	this.container.removeClass('focused');
+};
+
+IMTagMultiSelect.prototype.keyupHandler = function(event) {
+	this.resizeInput(event);
+};
 
 IMTagMultiSelect.prototype.resizeInput = function() {
 	var text = this.input.val().replace(/ /g, '\u00A0');
@@ -82,28 +93,50 @@ IMTagMultiSelect.prototype.update = function() {
 
 IMSelect = function( element, settings ) {
 	this.settings = settings;
+	this.filterString = '';
+	this.isOpen = false;
 	this.selection = $('<span>', {class:'im-select-selection'});
 	this.container = $('<div>', {class:'im-input im-select-container'})
 		.data('magic', this)
 		.css({width:element.width()})
 		.click($.proxy(this.open, this))
 		.append(this.selection)
-		.append('<span class="im-select-caret">\u25BE</span>');
+		.append('<span class="im-select-caret">\u25BE</span>')
+		.prop('tabindex', 0)
+		.focusin($.proxy(this.grabFocus, this))
+		.focusout($.proxy(this.dropFocus, this));
 	this.anchor = element.hide().change($.proxy(this.update, this)).after(this.container);
 	this.update();
 };
+
+IMSelect.prototype.grabFocus = function() {
+	this.container.addClass('focused');
+	$('html').unbind('keyup', this.keyupHandler);
+	$('html').keyup($.proxy(this.keyupHandler, this))
+};
+
+IMSelect.prototype.dropFocus = function() {
+	this.container.removeClass('focused');
+	$('html').unbind('keyup', this.keyupHandler);
+}
 
 IMSelect.prototype.update = function() {
 	this.selection.html(this.anchor.find(':selected').html());
 };
 
+IMSelect.prototype.refresh = function(event) {
+	this.close(event);
+	this.open(event);
+}
+
 IMSelect.prototype.close = function(event) {
+	this.isOpen = false;
 	if (this.options) {
 		$('html').unbind('click', this.close);
-		$('html').unbind('keyup', this.keyupHandler);
 		this.options.remove();
 		delete this.options;
 		this.container.removeClass('open');
+		this.container.focus();
 	}
 };
 
@@ -137,7 +170,7 @@ IMSelect.prototype.buildOptions = function() {
 	var columnCount = magicOptions.find('div.im-select-option').last().find('span').length;
 	magicOptions.find('div.im-select-option span').css('width', (100 / columnCount).toString() + "%");
 	return magicOptions;
-}
+};
 
 IMSelect.prototype.keyupHandler = function(event) {
   switch (event.keyCode) {
@@ -145,7 +178,7 @@ IMSelect.prototype.keyupHandler = function(event) {
   	case 13:
   		event.preventDefault();
   		this.update();
-  		this.close();
+  		if (this.isOpen) this.close(event);
   		break;
     case 38:
     case 40:
@@ -156,28 +189,59 @@ IMSelect.prototype.keyupHandler = function(event) {
 	    	nextOption.prop('selected', 'selected');
 	    	selectedOption.removeProp('selected');
 	    	this.update();
-	    	this.close();
-	    	this.open(event);
+	    	if (this.isOpen){
+		    	this.refresh(event);
+	    	}
 	    }
       break;
+    default:
+    	this.doFilter(String.fromCharCode(event.keyCode))
+    	break;
   }
-}
+};
 
-IMSelect.prototype.open = function(event) {	
-	$('html').unbind('keyup', this.keyupHandler);
-	event.stopPropagation();
-	if (this.options) {
-		this.close();
-		return;
+IMSelect.prototype.clearFilter = function() {
+	this.filterString = '';
+};
+
+IMSelect.prototype.doFilter = function(letter) {
+	this.filterString += letter.toLowerCase();
+	var filterString = this.filterString;
+	var matches = this.anchor.find('option:enabled').filter(function(){
+		return (($(this).val().length || $(this).val().length)
+			&& ($(this).val().toLowerCase().indexOf(filterString) === 0 
+			|| $(this).html().toLowerCase().indexOf(filterString) === 0));
+	});
+
+	if (matches.length) {
+		this.anchor.find('option:enabled').removeProp('selected');
+		matches.first().prop('selected', 'selected');
+		this.update();
+  	if (this.isOpen){
+    	this.refresh(event);
+  	}
+	} else {
+		this.filterString = (this.filterString.substring(0, this.filterString.length -1));
 	}
+
+	if (this.filterTimeout) clearTimeout(this.filterTimeout);
+	this.filterTimeout = setTimeout($.proxy(this.clearFilter, this), 1000);
+};
+
+IMSelect.prototype.open = function(event) {
+	$('html').unbind('keyup', this.keyupHandler);
+	this.container.focus();
+	this.isOpen = true;
+	event.stopPropagation();
 	if ($('.im-select-container.open').length) {
 		$('.im-select-container.open').each(function(){
-			$(this).data('magic').close();
+			$(this).data('magic').close(event);
 		});
+		return false;
 	}
 	this.options = this.buildOptions();
 	this.container.addClass('open').append(this.options);
-	$('html').click($.proxy(this.close, this)).keyup($.proxy(this.keyupHandler, this));
+	$('html').click($.proxy(this.close, this));
 };
 
 $.fn.extend({
