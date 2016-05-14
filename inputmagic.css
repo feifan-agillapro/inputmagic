@@ -12,21 +12,64 @@ input.im-input {
 	height:27px;
 }
 
+.im-inline-block {
+	display:inline-block;
+}
+
 div.im-tagmultiselect-selection {
 	display:none;
 }
 
 div.im-tagmultiselect-tag {
+  position: relative;
+  margin-left: 3px;
+  background-color: #dedede;
+  padding-left: 4px;
+  padding-right: 4px;
+  border-radius: 3px;
+  line-height: 18px;
+}
+
+div.im-tagmultiselect-autocomplete {
+  max-height: 200px;
+  overflow-y: scroll;
+	display:none;
+	position:absolute;
+	background-color:white;
+	width:200px;
+	min-height:10px;
+	border:1px solid #bbb;
+}
+
+div.im-tagmultiselect-autocomplete div.im-tagmultiselect-option {
+	padding-left:3px;
+}
+
+div.im-tagmultiselect-autocomplete div.im-tagmultiselect-option:hover {
+	background-color:#DEF;
+	cursor:default;
+}
+
+div.im-tagmultiselect-autocomplete div.im-tagmultiselect-option.im-selected {
+	background-color:#B5D2EF;
+}
+
+
+div.im-tagmultiselect-tagclose {
+	top:-1px;
 	position:relative;
-	display:inline-block;
+	font-size:12px;
 	margin-left:3px;
+	padding-left:2px;
+	width:8px;
+	height:10px;
+	border-radius:5px;
+	line-height:8px;
+	color:#888;
+	background-color:#f7f7f7;
 }
 
-span.im-tagmultiselect-tagclose {
-	margin-left:3px;
-}
-
-span.im-tagmultiselect-tagclose:hover{
+div.im-tagmultiselect-tagclose:hover{
 	cursor:pointer;
 }
 
@@ -84,7 +127,6 @@ div.im-select-container:hover {
 }
 
 span.im-select-selection {
-	display:inline-block;
  	padding-left:3px;
 }
 
@@ -101,7 +143,7 @@ div.im-select-options {
  	border:1px solid #bbb;
 }
 
-div.im-select-options div.selected {
+div.im-select-options div.im-selected {
 	background-color:#B5D2EF;
 }
 

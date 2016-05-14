@@ -5,9 +5,10 @@ IMTagMultiSelect = function( element, settings ) {
 	this.settings = settings;
 	this.selection = $('<div>', {class:'im-tagmultiselect-selection'});
 	this.sizer = $('<div>', {class:'im-tagmultiselect-sizer'});
+	this.autocomplete = $('<div>', {class:'im-tagmultiselect-autocomplete'})
 	this.input = $('<input>', {class:'im-tagmultiselect-input'})
-		.keyup($.proxy(this.resizeInput, this))
-		.keydown($.proxy(this.keyupHandler, this))
+		.keydown($.proxy(this.keyDownHandler, this))
+		.keyup($.proxy(this.keyupHandler, this))
 		.focusin($.proxy(this.grabFocus, this))
 		.focusout($.proxy(this.dropFocus, this));
 	this.container = $('<div>', {class:'im-input im-tagmultiselect-container'})
@@ -15,8 +16,14 @@ IMTagMultiSelect = function( element, settings ) {
 		.css({width:element.width()})
 		.click($.proxy(this.grabFocus, this))
 		.append(this.sizer)
-		.append($('<div>', {class:'im-tagmultiselect-inner'}).append(this.selection).append(this.input));
-	// element.hide();
+		.append($('<div>', {class:'im-tagmultiselect-inner'})
+			.append(this.selection)
+			.append($('<div>', {class:'im-inline-block'})
+				.append(this.input)
+				.append(this.autocomplete)
+			)
+		);
+	element.hide();
 	element.change($.proxy(this.update, this))
 		.after(this.container);
 	this.anchor = element;
@@ -32,8 +39,93 @@ IMTagMultiSelect.prototype.dropFocus = function(event) {
 	this.container.removeClass('focused');
 };
 
+IMTagMultiSelect.prototype.removeLastTag = function() {
+	if (this.selected.length) {
+		$(this.selected[this.selected.length-1]).removeProp('selected');
+		this.update();
+	}
+};
+
+IMTagMultiSelect.prototype.doAutoComplete = function() {
+	var magic = this;
+	var options = this.anchor.find('option:enabled:not(:selected)');
+	options = options.filter(function(){
+		return ($(this).html().toLowerCase().indexOf(magic.input.val().toLowerCase()) !== -1 && $(this).val().length > 0); 
+	});
+
+	var list = $('<div>', {class:'im-tagmultiselect-options'});
+
+	options.each(function(){
+		var option = $(this);
+		var magicOption = $('<div>', {class:'im-tagmultiselect-option'})
+			.html(option.val())
+			.data('anchor', option)
+			.click(function(){
+				$(this).data('anchor').prop('selected', 'selected');
+				magic.update();
+				magic.input.val('');
+				magic.doAutoComplete();
+			});
+		list.append(magicOption);
+	});
+
+	if (options.length && this.input.val().length) {
+		list.find('.im-tagmultiselect-option').first().addClass('im-selected');
+		this.autocomplete.show();
+		this.autocomplete.html(list);
+	} else {
+		this.autocomplete.hide();
+	}
+};
+
+IMTagMultiSelect.prototype.keyDownHandler = function(event) {
+		switch (event.keyCode) {
+			case 8:
+				if (!this.input.val().length) this.removeLastTag();
+				break;
+    case 38:
+    	event.preventDefault();
+  		var selected = this.autocomplete.find('.im-selected');
+  		var next = selected.prev('.im-tagmultiselect-option');
+  		if (next.length) {
+  			selected.removeClass('im-selected');
+  			next.addClass('im-selected');
+  		}
+      break;
+    case 40:
+    	event.preventDefault();
+  		var selected = this.autocomplete.find('.im-selected');
+  		var next = selected.next('.im-tagmultiselect-option');
+  		if (next.length) {
+  			selected.removeClass('im-selected');
+  			next.addClass('im-selected');
+  		}
+      break;
+		}
+		this.resizeInput();
+}
+
 IMTagMultiSelect.prototype.keyupHandler = function(event) {
+	var autoCompletable = true;
+	switch (event.keyCode) {
+  	case 9:
+  	case 13:
+  		event.preventDefault();
+  		this.autocomplete.find('.im-selected').data('anchor').prop('selected', 'selected');
+  		this.update();
+  		this.input.val('');
+  		break;
+  	case 38:
+  	case 40:
+  		autoCompletable = false;
+    default:
+    	// this.doFilter(String.fromCharCode(event.keyCode))
+    	break;
+  }
 	this.resizeInput(event);
+	if (autoCompletable) {
+		this.doAutoComplete();
+	}
 };
 
 IMTagMultiSelect.prototype.resizeInput = function() {
@@ -75,11 +167,11 @@ IMTagMultiSelect.prototype.update = function() {
 
 	for (var x = 0; x < magic.selected.length; x++) {
 		var option = $(this.selected[x]);
-		var tag = $('<div>', {class:'im-tagmultiselect-tag'});
+		var tag = $('<div>', {class:'im-tagmultiselect-tag im-inline-block'});
 		var text = $('<span>', {class:'im-tagmultiselect-tagtext'})
 			.html(option.val());
-		var closeButton = $('<span>', {class:'im-tagmultiselect-tagclose'})
-			.html('\u24E7')
+		var closeButton = $('<div>', {class:'im-tagmultiselect-tagclose im-inline-block'})
+			.html('x')
 			.data('anchor', option);
 		closeButton.click(function(){
 			$(this).data('anchor').removeProp('selected');
@@ -95,7 +187,7 @@ IMSelect = function( element, settings ) {
 	this.settings = settings;
 	this.filterString = '';
 	this.isOpen = false;
-	this.selection = $('<span>', {class:'im-select-selection'});
+	this.selection = $('<span>', {class:'im-select-selection im-inline-block'});
 	this.container = $('<div>', {class:'im-input im-select-container'})
 		.data('magic', this)
 		.css({width:element.width()})
@@ -142,7 +234,8 @@ IMSelect.prototype.close = function(event) {
 
 IMSelect.prototype.buildOptions = function() {
 	var magic = this;
-	var magicOptions = $('<div>', {class:'im-select-options'}).css({'width':this.container.width(),'z-index':this.container.getZIndex()+1});
+	var magicOptions = $('<div>', {class:'im-select-options'})
+		.css({'width':this.container.width(),'z-index':this.container.getZIndex()+1});
 	this.anchor.find('option:enabled').each(function(){
 		var option = $(this);
 		var magicOption = $('<div>', {class:'im-select-option'})
@@ -156,7 +249,7 @@ IMSelect.prototype.buildOptions = function() {
 		}
 
 		if ($(this).is(':selected') && this.value.length) {
-			magicOption.addClass('selected');
+			magicOption.addClass('im-selected');
 		}
 
 		magicOption.click(function(){
@@ -189,9 +282,7 @@ IMSelect.prototype.keyupHandler = function(event) {
 	    	nextOption.prop('selected', 'selected');
 	    	selectedOption.removeProp('selected');
 	    	this.update();
-	    	if (this.isOpen){
-		    	this.refresh(event);
-	    	}
+	    	if (this.isOpen) this.refresh(event);
 	    }
       break;
     default:
@@ -276,5 +367,32 @@ $.fn.extend({
 			if ( ['relative', 'absolute', 'fixed'].indexOf(position) > -1 && (!isNaN(element.css("zIndex")) && element.css('zIndex') > 0)) return element.css('zIndex');
 		}
 		return 0
-	}
+	},
+	getCursorPosition : function() {
+
+		if ($(this).is('input')) {
+			if ($(this).hasProp('selectionStart')) return $(this).hasProp('selectionStart');
+			if (document.selection) {
+				var selection = document.selection;
+				this.focus();
+
+			}
+		}
+
+		return false;
+    var input = this.get(0);
+    if ('selectionStart' in input) {
+      return input.selectionStart;
+    } else if (document.selection) {
+      // IE
+      input.focus();
+      var sel = document.selection.createRange();
+      var selLen = document.selection.createRange().text.length;
+      sel.moveStart('character', -input.value.length);
+      return sel.text.length - selLen;
+    }
+  },
+  hasProp : function(propertyName) {
+  	return (typeof this.prop(propertyName) != "undefined");
+  }
 });
