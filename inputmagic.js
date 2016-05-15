@@ -3,7 +3,6 @@
 IMTagMultiSelect = function( element, settings ) {
 	this.selected = [];
 	this.settings = settings;
-	this.selection = $('<div>', {class:'im-tagmultiselect-selection'});
 	this.sizer = $('<div>', {class:'im-tagmultiselect-sizer'});
 	this.autocomplete = $('<div>', {class:'im-tagmultiselect-autocomplete'})
 	this.input = $('<input>', {class:'im-tagmultiselect-input'})
@@ -11,6 +10,11 @@ IMTagMultiSelect = function( element, settings ) {
 		.keyup($.proxy(this.keyupHandler, this))
 		.focusin($.proxy(this.grabFocus, this))
 		.focusout($.proxy(this.dropFocus, this));
+	this.selection = $('<div>', {class:'im-tagmultiselect-selection'})
+		.append($('<div>', {class:'im-inline-block im-tagmultiselect-inputcontainer'})
+			.append(this.input)
+			.append(this.autocomplete)
+		);
 	this.container = $('<div>', {class:'im-input im-tagmultiselect-container'})
 		.data('magic', this)
 		.css({width:element.width()})
@@ -18,16 +22,18 @@ IMTagMultiSelect = function( element, settings ) {
 		.append(this.sizer)
 		.append($('<div>', {class:'im-tagmultiselect-inner'})
 			.append(this.selection)
-			.append($('<div>', {class:'im-inline-block'})
-				.append(this.input)
-				.append(this.autocomplete)
-			)
 		);
+
+	this.applySettings();
 	element.hide();
 	element.change($.proxy(this.update, this))
 		.after(this.container);
 	this.anchor = element;
 	this.update();
+};
+
+IMTagMultiSelect.prototype.applySettings = function() {
+	if (this.settings.class) this.container.addClass(this.settings.class);
 };
 
 IMTagMultiSelect.prototype.grabFocus = function(event) {
@@ -48,10 +54,14 @@ IMTagMultiSelect.prototype.removeLastTag = function() {
 
 IMTagMultiSelect.prototype.doAutoComplete = function() {
 	var magic = this;
-	var options = this.anchor.find('option:enabled:not(:selected)');
-	options = options.filter(function(){
-		return ($(this).html().toLowerCase().indexOf(magic.input.val().toLowerCase()) !== -1 && $(this).val().length > 0); 
+	var enabledOptions = this.anchor.find('option:enabled:not(:selected)');
+	options = enabledOptions.filter(function(){
+		return ($(this).html().toLowerCase().indexOf(magic.input.val().toLowerCase()) == 0 && $(this).val().length > 0);
 	});
+
+	// options.join(enabledOptions.filter(function(){
+	// 	return ($(this).html().toLowerCase().indexOf(magic.input.val().toLowerCase()) > 0 && $(this).val().length > 0);
+	// }));
 
 	var list = $('<div>', {class:'im-tagmultiselect-options'});
 
@@ -111,10 +121,12 @@ IMTagMultiSelect.prototype.keyupHandler = function(event) {
   	case 9:
   	case 13:
   		event.preventDefault();
-  		this.autocomplete.find('.im-selected').data('anchor').prop('selected', 'selected');
-  		this.update();
-  		this.input.val('');
-  		break;
+  		if (this.autocomplete.find('.im-selected:visible').length) {
+				this.autocomplete.find('.im-selected:visible').data('anchor').prop('selected', 'selected');
+				this.update();
+				this.input.val('');
+			}
+			break;
   	case 38:
   	case 40:
   		autoCompletable = false;
@@ -145,12 +157,7 @@ IMTagMultiSelect.prototype.resizeInput = function() {
 
 IMTagMultiSelect.prototype.update = function() {
 	var magic = this;
-	magic.selection.html('');
-	if (magic.anchor.find(':selected').length) {
-		magic.selection.css({display:'inline-block'});
-	} else {
-		magic.selection.css({display:'none'});
-	}
+	magic.selection.find('.im-tagmultiselect-inputcontainer').prevAll().remove();
 
 	magic.anchor.find(':selected').each(function(){
 		if (magic.selected.indexOf(this) === -1) {
@@ -179,7 +186,7 @@ IMTagMultiSelect.prototype.update = function() {
 		});
 		tag.append(text)
 			.append(closeButton);
-		magic.selection.append(tag);
+		magic.selection.find('.im-tagmultiselect-inputcontainer').before(tag);
 	}
 };
 

@@ -16,10 +16,6 @@ input.im-input {
 	display:inline-block;
 }
 
-div.im-tagmultiselect-selection {
-	display:none;
-}
-
 div.im-tagmultiselect-tag {
   position: relative;
   margin-left: 3px;
