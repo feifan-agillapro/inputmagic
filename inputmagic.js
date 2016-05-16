@@ -93,6 +93,9 @@ IMTagMultiSelect.prototype.keyDownHandler = function(event) {
 			case 8:
 				if (!this.input.val().length) this.removeLastTag();
 				break;
+			case 9:
+				event.preventDefault();
+				break;
     case 38:
     	event.preventDefault();
   		var selected = this.autocomplete.find('.im-selected');
@@ -153,6 +156,10 @@ IMTagMultiSelect.prototype.resizeInput = function() {
 
 	this.input.css('width', (width + 20) + 'px');
 	this.sizer.hide();
+
+	if (this.anchor.find(':selected').length) {
+		this.container.height(this.container.find('.im-tagmultiselect-inner').outerHeight());
+	}
 };
 
 IMTagMultiSelect.prototype.update = function() {
@@ -187,6 +194,10 @@ IMTagMultiSelect.prototype.update = function() {
 		tag.append(text)
 			.append(closeButton);
 		magic.selection.find('.im-tagmultiselect-inputcontainer').before(tag);
+	}
+
+	if (magic.anchor.find(':selected').length) {
+		this.container.height(this.container.find('.im-tagmultiselect-inner').outerHeight());
 	}
 };
 

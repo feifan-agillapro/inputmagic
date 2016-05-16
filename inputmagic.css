@@ -12,12 +12,18 @@ input.im-input {
 	height:27px;
 }
 
+input.im-tagmultiselect-input {
+	height:18px;
+	margin-bottom:3px;
+}
+
 .im-inline-block {
 	display:inline-block;
 }
 
 div.im-tagmultiselect-tag {
 	margin-top:4px;
+	margin-bottom:3px;
   position: relative;
   margin-left: 3px;
   background-color: #dedede;
