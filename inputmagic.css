@@ -17,6 +17,7 @@ input.im-input {
 }
 
 div.im-tagmultiselect-tag {
+	margin-top:4px;
   position: relative;
   margin-left: 3px;
   background-color: #dedede;
