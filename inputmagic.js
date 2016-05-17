@@ -43,8 +43,8 @@ IMTagMultiSelect = function( element, settings ) {
 
 IMTagMultiSelect.prototype.applySettings = function() {
 	var settings = this.settings;
-	if (settings.class) {
-		this.container.addClass(settings.class);
+	if (settings.hasOwnProperty('class')) {
+		this.container.addClass(settings['class']);
 	}
 };
 
@@ -233,8 +233,8 @@ IMSelect = function( element, settings ) {
 
 IMSelect.prototype.applySettings = function() {
 	var settings = this.settings;
-	if (settings.class) {
-		this.container.addClass(settings.class);
+	if (settings.hasOwnProperty('class')) {
+		this.container.addClass(settings['class']);
 	}
 };
 
