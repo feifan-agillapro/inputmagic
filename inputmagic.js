@@ -1,5 +1,14 @@
 ;$ = jQuery;
 
+if (typeof Array.prototype.indexOf == "undefined") {
+  Array.prototype.indexOf = function(needle) {
+    for (var x = 0; x < this.length; x++) {
+      if (this[x] === needle) return x;
+    }
+    return -1;
+  }
+}
+
 IMTagMultiSelect = function( element, settings ) {
 	this.selected = [];
 	this.settings = settings;
