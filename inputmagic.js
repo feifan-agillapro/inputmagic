@@ -3,24 +3,24 @@
 IMTagMultiSelect = function( element, settings ) {
 	this.selected = [];
 	this.settings = settings;
-	this.sizer = $('<div>', {class:'im-tagmultiselect-sizer'});
-	this.autocomplete = $('<div>', {class:'im-tagmultiselect-autocomplete'})
-	this.input = $('<input>', {class:'im-tagmultiselect-input'})
+	this.sizer = $('<div>', {'class':'im-tagmultiselect-sizer'});
+	this.autocomplete = $('<div>', {'class':'im-tagmultiselect-autocomplete'})
+	this.input = $('<input>', {'class':'im-tagmultiselect-input'})
 		.keydown($.proxy(this.keyDownHandler, this))
 		.keyup($.proxy(this.keyupHandler, this))
 		.focusin($.proxy(this.grabFocus, this))
 		.focusout($.proxy(this.dropFocus, this));
-	this.selection = $('<div>', {class:'im-tagmultiselect-selection'})
-		.append($('<div>', {class:'im-inline-block im-tagmultiselect-inputcontainer'})
+	this.selection = $('<div>', {'class':'im-tagmultiselect-selection'})
+		.append($('<div>', {'class':'im-inline-block im-tagmultiselect-inputcontainer'})
 			.append(this.input)
 			.append(this.autocomplete)
 		);
-	this.container = $('<div>', {class:'im-input im-tagmultiselect-container'})
+	this.container = $('<div>', {'class':'im-input im-tagmultiselect-container'})
 		.data('magic', this)
-		.css({width:element.width()})
+		.css({'width':element.width()})
 		.click($.proxy(this.grabFocus, this))
 		.append(this.sizer)
-		.append($('<div>', {class:'im-tagmultiselect-inner'})
+		.append($('<div>', {'class':'im-tagmultiselect-inner'})
 			.append(this.selection)
 		);
 
@@ -63,11 +63,11 @@ IMTagMultiSelect.prototype.doAutoComplete = function() {
 	// 	return ($(this).html().toLowerCase().indexOf(magic.input.val().toLowerCase()) > 0 && $(this).val().length > 0);
 	// }));
 
-	var list = $('<div>', {class:'im-tagmultiselect-options'});
+	var list = $('<div>', {'class':'im-tagmultiselect-options'});
 
 	options.each(function(){
 		var option = $(this);
-		var magicOption = $('<div>', {class:'im-tagmultiselect-option'})
+		var magicOption = $('<div>', {'class':'im-tagmultiselect-option'})
 			.html(option.val())
 			.data('anchor', option)
 			.click(function(){
@@ -181,10 +181,10 @@ IMTagMultiSelect.prototype.update = function() {
 
 	for (var x = 0; x < magic.selected.length; x++) {
 		var option = $(this.selected[x]);
-		var tag = $('<div>', {class:'im-tagmultiselect-tag im-inline-block'});
-		var text = $('<span>', {class:'im-tagmultiselect-tagtext'})
+		var tag = $('<div>', {'class':'im-tagmultiselect-tag im-inline-block'});
+		var text = $('<span>', {'class':'im-tagmultiselect-tagtext'})
 			.html(option.val());
-		var closeButton = $('<div>', {class:'im-tagmultiselect-tagclose im-inline-block'})
+		var closeButton = $('<div>', {'class':'im-tagmultiselect-tagclose im-inline-block'})
 			.html('x')
 			.data('anchor', option);
 		closeButton.click(function(){
@@ -205,10 +205,10 @@ IMSelect = function( element, settings ) {
 	this.settings = settings;
 	this.filterString = '';
 	this.isOpen = false;
-	this.selection = $('<span>', {class:'im-select-selection im-inline-block'});
-	this.container = $('<div>', {class:'im-input im-select-container'})
+	this.selection = $('<span>', {'class':'im-select-selection im-inline-block'});
+	this.container = $('<div>', {'class':'im-input im-select-container'})
 		.data('magic', this)
-		.css({width:element.width()})
+		.css({'width':element.width()})
 		.click($.proxy(this.open, this))
 		.append(this.selection)
 		.append('<span class="im-select-caret">\u25BE</span>')
@@ -252,11 +252,11 @@ IMSelect.prototype.close = function(event) {
 
 IMSelect.prototype.buildOptions = function() {
 	var magic = this;
-	var magicOptions = $('<div>', {class:'im-select-options'})
+	var magicOptions = $('<div>', {'class':'im-select-options'})
 		.css({'width':this.container.width(),'z-index':this.container.getZIndex()+1});
 	this.anchor.find('option:enabled').each(function(){
 		var option = $(this);
-		var magicOption = $('<div>', {class:'im-select-option'})
+		var magicOption = $('<div>', {'class':'im-select-option'})
 			.append((this.value.length) ? '<span>'+this.innerHTML+'</span>' : '<span>None</span>');
 
 		if (magic.settings.columns) {
