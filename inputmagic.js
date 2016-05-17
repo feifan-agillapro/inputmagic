@@ -33,7 +33,7 @@ IMTagMultiSelect = function( element, settings ) {
 };
 
 IMTagMultiSelect.prototype.applySettings = function() {
-	if (this.settings.class) this.container.addClass(this.settings.class);
+	if (typeof this.settings.class != "undefined") this.container.addClass(this.settings.class);
 };
 
 IMTagMultiSelect.prototype.grabFocus = function(event) {
