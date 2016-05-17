@@ -33,7 +33,10 @@ IMTagMultiSelect = function( element, settings ) {
 };
 
 IMTagMultiSelect.prototype.applySettings = function() {
-	if (typeof this.settings.class != "undefined") this.container.addClass(this.settings.class);
+	var settings = this.settings;
+	if (settings.class) {
+		this.container.addClass(settings.class);
+	}
 };
 
 IMTagMultiSelect.prototype.grabFocus = function(event) {
@@ -217,6 +220,13 @@ IMSelect = function( element, settings ) {
 		.focusout($.proxy(this.dropFocus, this));
 	this.anchor = element.hide().change($.proxy(this.update, this)).after(this.container);
 	this.update();
+};
+
+IMSelect.prototype.applySettings = function() {
+	var settings = this.settings;
+	if (settings.class) {
+		this.container.addClass(settings.class);
+	}
 };
 
 IMSelect.prototype.grabFocus = function() {
