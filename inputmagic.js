@@ -228,6 +228,7 @@ IMSelect = function( element, settings ) {
 		.focusin($.proxy(this.grabFocus, this))
 		.focusout($.proxy(this.dropFocus, this));
 	this.anchor = element.hide().change($.proxy(this.update, this)).after(this.container);
+	this.applySettings();
 	this.update();
 };
 
@@ -241,12 +242,15 @@ IMSelect.prototype.applySettings = function() {
 IMSelect.prototype.grabFocus = function() {
 	this.container.addClass('focused');
 	$('html').unbind('keyup', this.keyupHandler);
+	$('html').unbind('keydown', this.keyDownHandler);
 	$('html').keyup($.proxy(this.keyupHandler, this))
+	$('html').keydown($.proxy(this.keyDownHandler, this))
 };
 
 IMSelect.prototype.dropFocus = function() {
 	this.container.removeClass('focused');
 	$('html').unbind('keyup', this.keyupHandler);
+	$('html').unbind('keydown', this.keyDownHandler);
 }
 
 IMSelect.prototype.update = function() {
@@ -327,6 +331,17 @@ IMSelect.prototype.keyupHandler = function(event) {
     	break;
   }
 };
+
+IMSelect.prototype.keyDownHandler = function(event) {
+		switch (event.keyCode) {
+	    case 38:
+				event.preventDefault();
+	      break;
+	    case 40:
+				event.preventDefault();
+	      break;
+		}
+}
 
 IMSelect.prototype.clearFilter = function() {
 	this.filterString = '';
