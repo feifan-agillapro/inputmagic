@@ -227,7 +227,10 @@ IMSelect = function( element, settings ) {
 		.prop('tabindex', 0)
 		.focusin($.proxy(this.grabFocus, this))
 		.focusout($.proxy(this.dropFocus, this));
-	this.anchor = element.hide().change($.proxy(this.update, this)).after(this.container);
+	this.anchor = element.hide()
+	.data('magic', this)
+	.change($.proxy(this.update, this))
+	.after(this.container);
 	this.applySettings();
 	this.update();
 };
@@ -254,7 +257,16 @@ IMSelect.prototype.dropFocus = function() {
 }
 
 IMSelect.prototype.update = function() {
-	this.selection.html(this.anchor.find(':selected').html());
+	if (this.settings.display == "value") {
+		this.selection.html(this.anchor.find(':selected').val());
+	} else {
+		this.selection.html(this.anchor.find(':selected').html());
+	}
+	if (this.anchor.find(':selected').val().length) {
+		this.container.removeClass('im-select-empty');
+	} else {
+		this.container.addClass('im-select-empty');
+	}
 };
 
 IMSelect.prototype.refresh = function(event) {
@@ -276,7 +288,7 @@ IMSelect.prototype.close = function(event) {
 IMSelect.prototype.buildOptions = function() {
 	var magic = this;
 	var magicOptions = $('<div>', {'class':'im-select-options'})
-		.css({'width':this.container.width(),'z-index':this.container.getZIndex()+1});
+		.css({'width':this.container.outerWidth(),'z-index':this.container.getZIndex()+1});
 	this.anchor.find('option:enabled').each(function(){
 		var option = $(this);
 		var magicOption = $('<div>', {'class':'im-select-option'})
@@ -285,7 +297,7 @@ IMSelect.prototype.buildOptions = function() {
 		if (magic.settings.columns) {
 			for (var x = 0; x < magic.settings.columns.length; x++) {
 				var columnName = magic.settings.columns[x];
-				magicOption.append($('<span>').html($(this).data(columnName)));
+				if (typeof $(this).data(columnName) != 'undefined') magicOption.append($('<span>').html($(this).data(columnName)));
 			}
 		}
 
@@ -296,13 +308,22 @@ IMSelect.prototype.buildOptions = function() {
 		magicOption.click(function(){
 			magic.anchor.find('.im-select-option').removeProp('selected');
 			option.prop('selected', 'selected');
-			magic.update();
+			magic.anchor.change();
 		});
 
 		magicOptions.append(magicOption);
 	});
-	var columnCount = magicOptions.find('div.im-select-option').last().find('span').length;
-	magicOptions.find('div.im-select-option span').css('width', (100 / columnCount).toString() + "%");
+
+	magicOptions.find('.im-select-option').each(function(){
+		if (magic.settings.columnWidths) {
+			for (var x = 0; x < magic.settings.columnWidths.length; x++) {
+				$(this).find('span:eq('+x+')').css('width', magic.settings.columnWidths[x]);
+			}
+		} else {
+			var columnCount = $(this).find('span').length;
+			$(this).find('span').css('width', (100 / columnCount).toString() + "%");
+		}
+	});
 	return magicOptions;
 };
 
@@ -333,14 +354,14 @@ IMSelect.prototype.keyupHandler = function(event) {
 };
 
 IMSelect.prototype.keyDownHandler = function(event) {
-		switch (event.keyCode) {
-	    case 38:
-				event.preventDefault();
-	      break;
-	    case 40:
-				event.preventDefault();
-	      break;
-		}
+	switch (event.keyCode) {
+	  case 38:
+			event.preventDefault();
+	    break;
+	  case 40:
+			event.preventDefault();
+	    break;
+	}
 }
 
 IMSelect.prototype.clearFilter = function() {
