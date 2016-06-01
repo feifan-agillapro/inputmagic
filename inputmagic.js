@@ -42,9 +42,8 @@ IMTagMultiSelect = function( element, settings ) {
 };
 
 IMTagMultiSelect.prototype.applySettings = function() {
-	var settings = this.settings;
-	if (settings.hasOwnProperty('class')) {
-		this.container.addClass(settings['class']);
+	if (this.settings.hasOwnProperty('class')) {
+		this.container.addClass(this.settings['class']);
 	}
 };
 
@@ -291,8 +290,9 @@ IMSelect.prototype.buildOptions = function() {
 		.css({'width':this.container.outerWidth(),'z-index':this.container.getZIndex()+1});
 	this.anchor.find('option:enabled').each(function(){
 		var option = $(this);
+		var optionDisplay = (this.value.length || !magic.settings.hasOwnProperty('emptyDisplay')) ? '<span>'+this.innerHTML+'</span>' : '<span>'+magic.settings.emptyDisplay'</span>'
 		var magicOption = $('<div>', {'class':'im-select-option'})
-			.append((this.value.length) ? '<span>'+this.innerHTML+'</span>' : '<span>None</span>');
+			.append(optionDisplay);
 
 		if (magic.settings.columns) {
 			for (var x = 0; x < magic.settings.columns.length; x++) {
