@@ -1,12 +1,12 @@
 ;$ = jQuery;
 
 if (typeof Array.prototype.indexOf == "undefined") {
-  Array.prototype.indexOf = function(needle) {
-    for (var x = 0; x < this.length; x++) {
-      if (this[x] === needle) return x;
-    }
-    return -1;
-  }
+	Array.prototype.indexOf = function(needle) {
+		for (var x = 0; x < this.length; x++) {
+			if (this[x] === needle) return x;
+		}
+		return -1;
+	}
 }
 
 IMTagMultiSelect = function( element, settings ) {
@@ -24,9 +24,12 @@ IMTagMultiSelect = function( element, settings ) {
 			.append(this.input)
 			.append(this.autocomplete)
 		);
+
+	var width = settings.width || element.width();
+
 	this.container = $('<div>', {'class':'im-input im-tagmultiselect-container'})
 		.data('magic', this)
-		.css({'width':element.width()})
+		.css({'width':width})
 		.click($.proxy(this.grabFocus, this))
 		.append(this.sizer)
 		.append($('<div>', {'class':'im-tagmultiselect-inner'})
@@ -42,8 +45,9 @@ IMTagMultiSelect = function( element, settings ) {
 };
 
 IMTagMultiSelect.prototype.applySettings = function() {
-	if (this.settings.hasOwnProperty('class')) {
-		this.container.addClass(this.settings['class']);
+	var settings = this.settings;
+	if (settings.hasOwnProperty('class')) {
+		this.container.addClass(settings['class']);
 	}
 };
 
@@ -107,24 +111,24 @@ IMTagMultiSelect.prototype.keyDownHandler = function(event) {
 			case 9:
 				event.preventDefault();
 				break;
-    case 38:
-    	event.preventDefault();
-  		var selected = this.autocomplete.find('.im-selected');
-  		var next = selected.prev('.im-tagmultiselect-option');
-  		if (next.length) {
-  			selected.removeClass('im-selected');
-  			next.addClass('im-selected');
-  		}
-      break;
-    case 40:
-    	event.preventDefault();
-  		var selected = this.autocomplete.find('.im-selected');
-  		var next = selected.next('.im-tagmultiselect-option');
-  		if (next.length) {
-  			selected.removeClass('im-selected');
-  			next.addClass('im-selected');
-  		}
-      break;
+		case 38:
+			event.preventDefault();
+			var selected = this.autocomplete.find('.im-selected');
+			var next = selected.prev('.im-tagmultiselect-option');
+			if (next.length) {
+				selected.removeClass('im-selected');
+				next.addClass('im-selected');
+			}
+			break;
+		case 40:
+			event.preventDefault();
+			var selected = this.autocomplete.find('.im-selected');
+			var next = selected.next('.im-tagmultiselect-option');
+			if (next.length) {
+				selected.removeClass('im-selected');
+				next.addClass('im-selected');
+			}
+			break;
 		}
 		this.resizeInput();
 }
@@ -132,22 +136,22 @@ IMTagMultiSelect.prototype.keyDownHandler = function(event) {
 IMTagMultiSelect.prototype.keyupHandler = function(event) {
 	var autoCompletable = true;
 	switch (event.keyCode) {
-  	case 9:
-  	case 13:
-  		event.preventDefault();
-  		if (this.autocomplete.find('.im-selected:visible').length) {
+		case 9:
+		case 13:
+			event.preventDefault();
+			if (this.autocomplete.find('.im-selected:visible').length) {
 				this.autocomplete.find('.im-selected:visible').data('anchor').prop('selected', 'selected');
 				this.update();
 				this.input.val('');
 			}
 			break;
-  	case 38:
-  	case 40:
-  		autoCompletable = false;
-    default:
-    	// this.doFilter(String.fromCharCode(event.keyCode))
-    	break;
-  }
+		case 38:
+		case 40:
+			autoCompletable = false;
+		default:
+			// this.doFilter(String.fromCharCode(event.keyCode))
+			break;
+	}
 	this.resizeInput(event);
 	if (autoCompletable) {
 		this.doAutoComplete();
@@ -217,9 +221,12 @@ IMSelect = function( element, settings ) {
 	this.filterString = '';
 	this.isOpen = false;
 	this.selection = $('<span>', {'class':'im-select-selection im-inline-block'});
+
+	var width = settings.width || element.width();
+
 	this.container = $('<div>', {'class':'im-input im-select-container'})
 		.data('magic', this)
-		.css({'width':element.width()})
+		.css({'width':width})
 		.click($.proxy(this.open, this))
 		.append(this.selection)
 		.append('<span class="im-select-caret">\u25BE</span>')
@@ -328,40 +335,40 @@ IMSelect.prototype.buildOptions = function() {
 };
 
 IMSelect.prototype.keyupHandler = function(event) {
-  switch (event.keyCode) {
-  	case 9:
-  	case 13:
-  		event.preventDefault();
-  		this.update();
-  		if (this.isOpen) this.close(event);
-  		break;
-    case 38:
-    case 40:
-      event.preventDefault();
-      var selectedOption = this.anchor.find('option:selected');
-      var nextOption = (event.keyCode == 40) ? selectedOption.next('option:enabled') : selectedOption.prev('option:enabled');
-	    if (nextOption.length > 0) {
-	    	nextOption.prop('selected', 'selected');
-	    	selectedOption.removeProp('selected');
-	    	this.update();
-	    	if (this.isOpen) this.refresh(event);
-	    }
-      break;
-    default:
-    	this.doFilter(String.fromCharCode(event.keyCode))
-    	break;
-  }
+	switch (event.keyCode) {
+		case 9:
+		case 13:
+			event.preventDefault();
+			this.update();
+			if (this.isOpen) this.close(event);
+			break;
+		case 38:
+		case 40:
+			event.preventDefault();
+			var selectedOption = this.anchor.find('option:selected');
+			var nextOption = (event.keyCode == 40) ? selectedOption.next('option:enabled') : selectedOption.prev('option:enabled');
+			if (nextOption.length > 0) {
+				nextOption.prop('selected', 'selected');
+				selectedOption.removeProp('selected');
+				this.update();
+				if (this.isOpen) this.refresh(event);
+			}
+			break;
+		default:
+			this.doFilter(String.fromCharCode(event.keyCode))
+			break;
+	}
 };
 
 IMSelect.prototype.keyDownHandler = function(event) {
-	switch (event.keyCode) {
-	  case 38:
-			event.preventDefault();
-	    break;
-	  case 40:
-			event.preventDefault();
-	    break;
-	}
+		switch (event.keyCode) {
+			case 38:
+				event.preventDefault();
+				break;
+			case 40:
+				event.preventDefault();
+				break;
+		}
 }
 
 IMSelect.prototype.clearFilter = function() {
@@ -381,9 +388,9 @@ IMSelect.prototype.doFilter = function(letter) {
 		this.anchor.find('option:enabled').removeProp('selected');
 		matches.first().prop('selected', 'selected');
 		this.update();
-  	if (this.isOpen){
-    	this.refresh(event);
-  	}
+		if (this.isOpen){
+			this.refresh(event);
+		}
 	} else {
 		this.filterString = (this.filterString.substring(0, this.filterString.length -1));
 	}
@@ -453,19 +460,19 @@ $.fn.extend({
 		}
 
 		return false;
-    var input = this.get(0);
-    if ('selectionStart' in input) {
-      return input.selectionStart;
-    } else if (document.selection) {
-      // IE
-      input.focus();
-      var sel = document.selection.createRange();
-      var selLen = document.selection.createRange().text.length;
-      sel.moveStart('character', -input.value.length);
-      return sel.text.length - selLen;
-    }
-  },
-  hasProp : function(propertyName) {
-  	return (typeof this.prop(propertyName) != "undefined");
-  }
+		var input = this.get(0);
+		if ('selectionStart' in input) {
+			return input.selectionStart;
+		} else if (document.selection) {
+			// IE
+			input.focus();
+			var sel = document.selection.createRange();
+			var selLen = document.selection.createRange().text.length;
+			sel.moveStart('character', -input.value.length);
+			return sel.text.length - selLen;
+		}
+	},
+	hasProp : function(propertyName) {
+		return (typeof this.prop(propertyName) != "undefined");
+	}
 });
