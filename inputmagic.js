@@ -234,9 +234,8 @@ IMSelect = function( element, settings ) {
 		.focusin($.proxy(this.grabFocus, this))
 		.focusout($.proxy(this.dropFocus, this));
 	this.anchor = element.hide()
-	.data('magic', this)
-	.change($.proxy(this.update, this))
-	.after(this.container);
+		.change($.proxy(this.update, this))
+		.after(this.container);
 	this.applySettings();
 	this.update();
 };
@@ -263,6 +262,7 @@ IMSelect.prototype.dropFocus = function() {
 }
 
 IMSelect.prototype.update = function() {
+	if (!this.anchor.find('option:enabled').length) return false;
 	if (this.settings.display == "value") {
 		this.selection.html(this.anchor.find(':selected').val());
 	} else {
@@ -400,6 +400,7 @@ IMSelect.prototype.doFilter = function(letter) {
 };
 
 IMSelect.prototype.open = function(event) {
+	if (!this.anchor.find('option:enabled').length || this.anchor.is(':disabled')) return false;
 	$('html').unbind('keyup', this.keyupHandler);
 	this.container.focus();
 	this.isOpen = true;
@@ -415,6 +416,65 @@ IMSelect.prototype.open = function(event) {
 	$('html').click($.proxy(this.close, this));
 };
 
+IMRadioFamily = function() {
+	this.children = [];
+};
+
+IMRadioFamily.prototype.addChild = function(child) {
+	this.children.push(child);
+};
+
+IMRadioFamily.prototype.update = function() {
+	for (var x = 0; x < this.children.length; x++) {
+		this.children[x].update();
+	}
+};
+
+IMRadioButton = function(element, settings) {
+	this.settings = settings;
+	this.anchor = element;
+
+	this.family = this.findFamily();
+
+	this.container = $('<div>', {'class':'im-input im-radiobutton-container'})
+		.data('magic', this)
+		.click($.proxy(this.clickHandler, this))
+		.prop('tabindex', 0)
+		.focusin($.proxy(this.grabFocus, this))
+		.focusout($.proxy(this.dropFocus, this));
+	this.anchor/*.hide()*/
+		.change($.proxy(this.family.update(), this))
+		/*.after(this.container)*/;
+
+	this.family.addChild(this);
+	this.applySettings();
+	this.update();
+};
+
+IMRadioButton.prototype.findFamily = function() {
+	var elements = $('input[type="radio"][name="'+this.anchor.prop('name')+'"]');
+
+	for (var x = 0; x < elements.length; x++) {
+		if ($(elements[x]).data('magic')) {
+			return $(elements[x]).data('magic').family;
+		}
+	}
+
+	return new IMRadioFamily()
+};
+
+IMRadioButton.prototype.update = function() {
+
+};
+
+IMRadioButton.prototype.applySettings = function() {
+
+};
+
+IMRadioButton.prototype.clickHandler = function() {
+	this.anchor.click();
+};
+
 $.fn.extend({
 	magic : function( settings ) {
 		settings = settings || {};
@@ -426,16 +486,23 @@ $.fn.extend({
 				if (settings == 'update') {
 					magic.update();
 				}
+				return magic;
 			} else {
 				switch (object.prop('type')) {
 					case 'select-one':
 						object.data('magic', new IMSelect(object, settings));
-						break;
+						return object.data('magic');
 					case 'select-multiple':
 						if (settings.type == 'tags') {
 							object.data('magic', new IMTagMultiSelect(object, settings));
 						}
-						break;
+						return object.data('magic');
+					case 'radio':
+						if (settings.type == 'buttons') {
+							object.data('magic', new IMRadioButton(object, settings));
+							return object.data('magic');
+						}
+						
 				}
 			}
 		});
@@ -449,7 +516,6 @@ $.fn.extend({
 		return 0
 	},
 	getCursorPosition : function() {
-
 		if ($(this).is('input')) {
 			if ($(this).hasProp('selectionStart')) return $(this).hasProp('selectionStart');
 			if (document.selection) {

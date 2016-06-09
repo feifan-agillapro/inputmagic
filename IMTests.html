@@ -19,17 +19,24 @@
 				$('.im-multiselect-tags').magic({
 					type:'tags',
 				});
+
+				//Radio buttons
+				$('.im-radio-buttons').magic({
+					type:'buttons',
+				})
 			});
 		</script>
 	</head>
 	<body>
 		<div class="container">
 			<h4>Regular Select</h4>
-			<select class="im-select">
+			<select class="im-select" disabled>
 				<option value="">Select a Make</option>
 				<option value="BMW">BMW</option>
 				<option value="Ford">Ford</option>
 				<option value="Lotus">Lotus</option>
+			</select>
+			<select class="im-select">
 			</select>
 			<h4>Multi-Column Select</h4>
 			<select class="im-select-multicolumn" style="width:150px;">
@@ -37,6 +44,8 @@
 				<option value="Small" data-price="$4.99">Small</option>
 				<option value="Medium" data-price="$9.99">Medium</option>
 				<option value="Large" data-price="$14.99">Large</option>
+			</select>
+			<select class="im-select-multicolumn">
 			</select>
 			<h4>Tag-Style Mutli-Select</h4>
 			<select class="im-multiselect-tags" multiple style="width:300px;">
@@ -53,6 +62,9 @@
 				<option value="Lisp">Lisp</option>
 				<option value="Haskell">Haskell</option>
 			</select>
+			<h4>Radio Buttons</h4>
+			<input type="radio" class="im-radio-buttons" name="radio-button-test" value="one"> One
+			<input type="radio" class="im-radio-buttons" name="radio-button-test" value="two"> Two
 			<h4>Regular Text</h4>
 			<input type="text" class="im-text im-input" />
 		</div>
