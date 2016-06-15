@@ -350,7 +350,7 @@ IMSelect.prototype.keyupHandler = function(event) {
 			if (nextOption.length > 0) {
 				nextOption.prop('selected', 'selected');
 				selectedOption.removeProp('selected');
-				this.update();
+				this.anchor.change();
 				if (this.isOpen) this.refresh(event);
 			}
 			break;
